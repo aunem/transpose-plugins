@@ -11,7 +11,7 @@
     "pkg/resolve",
     "pkg/roundtrip"
   ]
-  revision = "52a9a51d2ccf9252fc9caf998e75a1f7be0241b6"
+  revision = "ec110e5e05c6004504812f5e36ccb3e0a97b95db"
 
 [[projects]]
   name = "github.com/ericchiang/k8s"
