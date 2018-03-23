@@ -16,9 +16,7 @@ import (
 var Spec HTTPListenerSpec
 var ListenerPlugin HTTPListener
 
-type HTTPListener struct {
-	Str string
-}
+type HTTPListener struct{}
 
 func main() {}
 
@@ -81,7 +79,7 @@ func (h *HTTPListener) Listen(spec config.TransposeSpec) error {
 		httpSpec.Port = "8080"
 	}
 	s := &http.Server{
-		Addr:    fmt.Sprintf(":%s", spec.Port),
+		Addr:    fmt.Sprintf(":%s", httpSpec.Port),
 		Handler: handler,
 	}
 	return s.ListenAndServe()
