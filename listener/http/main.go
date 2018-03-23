@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/aunem/transpose/config"
 	"github.com/aunem/transpose/pkg/context"
 	"github.com/aunem/transpose/pkg/middleware"
 	"github.com/aunem/transpose/pkg/roundtrip"
@@ -15,66 +16,76 @@ import (
 var Spec HTTPListenerSpec
 var ListenerPlugin HTTPListenerSpec
 
-type HTTPListener {}
+type HTTPListener struct {
+	Str string
+}
 
 func main() {}
 
 // Listen implements the listener plugin inerface
-func (h *HTTPListener) Listen(spec interface{}) error {
-	spec, ok := spec.(HTTPListenerSpec)
+func (h *HTTPListener) Listen(spec config.TransposeSpec) error {
+	httpSpec, ok := spec.Listener.Spec.(HTTPListenerSpec)
 	if !ok {
 		return fmt.Errorf("could not cast spec")
 	}
 
+	log.Info("printing...")
 	log.Debugf("creating middleware manager....")
-	mw, err := middleware.NewManager(conf)
+	mw, err := middleware.NewManager(spec)
 	if err != nil {
 		log.Fatalf("could not create middleware: %v", err)
 	}
 	log.Debugf("creating roundtrip manager...")
-	rt, err := roundtrip.NewManager(conf)
+	rt, err := roundtrip.NewManager(spec)
 	if err != nil {
 		log.Fatalf("could not create roundtrip: %v", err)
 	}
 	t := HTTPTranslator{
 		FlushInterval: 10 * time.Second,
 	}
-	h := http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
+	handler := http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		// process request
 		log.Debugf("processing request: %+v", req)
-		rc := context.NewRequestContext(req)
+		rc := context.NewHTTPRequest(req)
 		rcf, err := mw.ExecRequestStack(rc)
 		if err != nil {
-			log.Error(err)
-			// need to bail
+			http.Error(rw, err.Error(), 500)
+			return
 		}
 
 		// send to backend
-		log.Debugf("sending roundtrip: %+v", rcc)
-		rs, err := rt.ExecRoundtrip(rcc)
+		log.Debugf("sending roundtrip: %+v", rcf)
+		rs, err := rt.ExecRoundtrip(rcf)
 		if err != nil {
-			log.Error(err)
+			http.Error(rw, err.Error(), 500)
+			return
 		}
 
 		// process response
 		log.Debugf("processing response: %+v", rs)
 		rsf, err := mw.ExecResponseStack(rs)
 		if err != nil {
-			log.Error(err)
+			http.Error(rw, err.Error(), 500)
+			return
 		}
 
-		// write response
 		log.Debugf("writing response: %+v", rsf)
-		rw = t.ResponseToWriter(rsf.Response, rw)
+		r, err := context.ResponseToHTTP(rsf)
+		if err != nil {
+			http.Error(rw, err.Error(), 500)
+			return
+		}
+		rw = t.ResponseToWriter(r.Response, rw)
 	})
-	if conf.Port == "" {
-		conf.Port = "8080"
+	if httpSpec.Port == "" {
+		httpSpec.Port = "8080"
 	}
 	s := &http.Server{
-		Addr:    fmt.Sprintf(":%s", conf.Port),
-		Handler: h,
+		Addr:    fmt.Sprintf(":%s", spec.Port),
+		Handler: handler,
 	}
-	s.ListenAndServe()
+	return s.ListenAndServe()
 }
 
-func (h *HTTPListener) Stats() ([]byte, error) {}
+// Stats implements the listener plugin interface for fetching stats
+func (h *HTTPListener) Stats() ([]byte, error) { return nil, nil }
