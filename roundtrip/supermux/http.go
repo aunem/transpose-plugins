@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"net"
 	"net/http"
 	"net/url"
@@ -71,22 +70,22 @@ func changeTarget(outReq *http.Request, target *url.URL) {
 }
 
 // RequestToRoundtrip prepares an inbound request for its roundtrip
-func RequestToRoundtrip(rc *ocontext.HTTPRequest, rw http.ResponseWriter) *ocontext.HTTPRequest {
+func RequestToRoundtrip(rc *ocontext.HTTPRequest) *ocontext.HTTPRequest {
 	req := rc.Request
 	ctx := req.Context()
-	if cn, ok := rw.(http.CloseNotifier); ok {
-		var cancel context.CancelFunc
-		ctx, cancel = context.WithCancel(ctx)
-		defer cancel()
-		notifyChan := cn.CloseNotify()
-		go func() {
-			select {
-			case <-notifyChan:
-				cancel()
-			case <-ctx.Done():
-			}
-		}()
-	}
+	// if cn, ok := rw.(http.CloseNotifier); ok {   need to think this part through
+	// 	var cancel context.CancelFunc
+	// 	ctx, cancel = context.WithCancel(ctx)
+	// 	defer cancel()
+	// 	notifyChan := cn.CloseNotify()
+	// 	go func() {
+	// 		select {
+	// 		case <-notifyChan:
+	// 			cancel()
+	// 		case <-ctx.Done():
+	// 		}
+	// 	}()
+	// }
 
 	outreq := new(http.Request)
 	*outreq = *req // includes shallow copies of maps, but okay

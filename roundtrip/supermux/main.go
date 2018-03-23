@@ -37,11 +37,11 @@ func (s *superMux) Roundtrip(req context.Request, spec interface{}) (context.Res
 			}
 			if match {
 				// clean request
-				rcc := RequestToRoundtrip(r, rw)
+				rcc := RequestToRoundtrip(r)
 				u := r.Request.URL
 				host := fmt.Sprintf("%s:%s", v.Backend.ServiceName, v.Backend.ServicePort)
 				u.Host = host
-				changeTarget(r.Request, u)
+				changeTarget(rcc.Request, u)
 				resp, err := roundtripper.RoundTrip(r.Request)
 				if err != nil {
 					return nil, err
