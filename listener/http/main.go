@@ -16,9 +16,8 @@ import (
 var Spec HTTPListenerSpec
 var ListenerPlugin HTTPListenerSpec
 
-type HTTPListener struct {
-	Str string
-}
+// test
+type HTTPListener struct{}
 
 func main() {}
 
