@@ -14,7 +14,7 @@ import (
 
 // Plugin exports
 var Spec HTTPListenerSpec
-var ListenerPlugin HTTPListenerSpec
+var ListenerPlugin HTTPListener
 
 type HTTPListener struct {
 	Str string
