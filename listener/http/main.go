@@ -22,7 +22,7 @@ func main() {}
 
 // Listen implements the listener plugin inerface
 func (h *HTTPListener) Listen(spec interface{}, mw *middleware.Manager, rt *roundtrip.Manager) error {
-	log.Debugf("listener spec: %+v", spec)
+	log.Debugf("listener spec: %+#v", spec)
 	httpSpec, ok := spec.(HTTPListenerSpec)
 	if !ok {
 		return fmt.Errorf("could not cast spec")
