@@ -22,6 +22,7 @@ func main() {}
 
 // Listen implements the listener plugin inerface
 func (h *HTTPListener) Listen(spec config.TransposeSpec) error {
+	log.Debugf("listener spec: %+v", spec.Listener.Spec)
 	httpSpec, ok := spec.Listener.Spec.(HTTPListenerSpec)
 	if !ok {
 		return fmt.Errorf("could not cast spec")
