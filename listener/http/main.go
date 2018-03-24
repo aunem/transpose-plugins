@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/aunem/transpose/config"
@@ -76,11 +77,13 @@ func (h *HTTPListener) Listen(spec config.TransposeSpec) error {
 		}
 		rw = t.ResponseToWriter(r.Response, rw)
 	})
-	if httpSpec.Port == "" {
-		httpSpec.Port = "8080"
+	port := strconv.Itoa(httpSpec.Port)
+	log.Info("port: ", port)
+	if port == "" {
+		port = "8080"
 	}
 	s := &http.Server{
-		Addr:    fmt.Sprintf(":%s", httpSpec.Port),
+		Addr:    fmt.Sprintf(":%s", port),
 		Handler: handler,
 	}
 	return s.ListenAndServe()
