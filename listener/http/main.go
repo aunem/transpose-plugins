@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/aunem/transpose/config"
 	"github.com/aunem/transpose/pkg/context"
 	"github.com/aunem/transpose/pkg/middleware"
 	"github.com/aunem/transpose/pkg/roundtrip"
@@ -22,24 +21,13 @@ type HTTPListener struct{}
 func main() {}
 
 // Listen implements the listener plugin inerface
-func (h *HTTPListener) Listen(spec config.TransposeSpec) error {
-	log.Debugf("listener spec: %+v", spec.Listener.Spec)
-	httpSpec, ok := spec.Listener.Spec.(HTTPListenerSpec)
+func (h *HTTPListener) Listen(spec interface{}, mw *middleware.Manager, rt *roundtrip.Manager) error {
+	log.Debugf("listener spec: %+v", spec)
+	httpSpec, ok := spec.(HTTPListenerSpec)
 	if !ok {
 		return fmt.Errorf("could not cast spec")
 	}
 
-	log.Info("printing...")
-	log.Debugf("creating middleware manager....")
-	mw, err := middleware.NewManager(spec)
-	if err != nil {
-		log.Fatalf("could not create middleware: %v", err)
-	}
-	log.Debugf("creating roundtrip manager...")
-	rt, err := roundtrip.NewManager(spec)
-	if err != nil {
-		log.Fatalf("could not create roundtrip: %v", err)
-	}
 	t := HTTPTranslator{
 		FlushInterval: 10 * time.Second,
 	}
