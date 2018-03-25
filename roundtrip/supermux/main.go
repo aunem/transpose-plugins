@@ -20,16 +20,12 @@ var Spec SuperMuxSpec
 // RoundtripPlugin is the roundtrip plugin inerface
 var RoundtripPlugin superMux
 
-func (s *superMux) Roundtrip(req context.Request, spec interface{}) (context.Response, error) {
+func (s *superMux) Roundtrip(req context.Request) (context.Response, error) {
 	var err error
-	sm, ok := spec.(SuperMuxSpec)
-	if !ok {
-		return nil, fmt.Errorf("could not cast spec")
-	}
 	switch r := req.(type) {
 	case *context.HTTPRequest:
 		var match bool
-		for _, v := range sm.HTTP {
+		for _, v := range Spec.HTTP {
 			u := r.Request.URL
 			match, err = path.Match(v.Path, u.Path)
 			if err != nil {
@@ -59,7 +55,11 @@ func (s *superMux) Roundtrip(req context.Request, spec interface{}) (context.Res
 	}
 }
 
-func (s *superMux) Init(spec interface{}) error {
+func (s *superMux) LoadSpec(spec interface{}) error {
+	return nil
+}
+
+func (s *superMux) Init() error {
 	roundtripper = http.DefaultTransport
 	return nil
 }

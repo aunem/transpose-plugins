@@ -3,8 +3,9 @@ package main
 import (
 	"fmt"
 	"net/http"
-	"strconv"
 	"time"
+
+	"gopkg.in/yaml.v2"
 
 	"github.com/aunem/transpose/pkg/context"
 	"github.com/aunem/transpose/pkg/middleware"
@@ -12,21 +13,18 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// Plugin exports
+// Spec represents the plugins spec
 var Spec HTTPListenerSpec
-var ListenerPlugin HTTPListener
 
-type HTTPListener struct{}
+// ListenerPlugin is an export for the listener interface
+var ListenerPlugin httpListener
+
+type httpListener struct{}
 
 func main() {}
 
 // Listen implements the listener plugin inerface
-func (h *HTTPListener) Listen(spec interface{}, mw *middleware.Manager, rt *roundtrip.Manager) error {
-	log.Debugf("listener spec: %+#v", spec)
-	httpSpec, ok := spec.(HTTPListenerSpec)
-	if !ok {
-		return fmt.Errorf("could not cast spec")
-	}
+func (h *httpListener) Listen(mw *middleware.Manager, rt *roundtrip.Manager) error {
 
 	t := HTTPTranslator{
 		FlushInterval: 10 * time.Second,
@@ -65,8 +63,7 @@ func (h *HTTPListener) Listen(spec interface{}, mw *middleware.Manager, rt *roun
 		}
 		rw = t.ResponseToWriter(r.Response, rw)
 	})
-	port := strconv.Itoa(httpSpec.Port)
-	log.Info("port: ", port)
+	port := Spec.Port
 	if port == "" {
 		port = "8080"
 	}
@@ -74,8 +71,23 @@ func (h *HTTPListener) Listen(spec interface{}, mw *middleware.Manager, rt *roun
 		Addr:    fmt.Sprintf(":%s", port),
 		Handler: handler,
 	}
+	log.Infof("starting server: %+v", s)
 	return s.ListenAndServe()
 }
 
+// LoadSpec implements the listener plugin interface for loading the spec config
+func (h *httpListener) LoadSpec(spec interface{}) error {
+	log.Debug("loading spec...")
+	b, err := yaml.Marshal(spec)
+	if err != nil {
+		return err
+	}
+	err = yaml.Unmarshal(b, &Spec)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
 // Stats implements the listener plugin interface for fetching stats
-func (h *HTTPListener) Stats() ([]byte, error) { return nil, nil }
+func (h *httpListener) Stats() ([]byte, error) { return nil, nil }
