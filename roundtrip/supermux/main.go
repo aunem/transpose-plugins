@@ -26,7 +26,7 @@ func (s *superMux) Roundtrip(req context.Request) (context.Response, error) {
 	var err error
 	switch r := req.(type) {
 	case *context.HTTPRequest:
-		log.Debug("executing http request: ", r)
+		log.Debugf("executing http request: %+v", req.GetRequest())
 		var match bool
 		for _, v := range Spec.HTTP {
 			u := r.Request.URL
@@ -39,12 +39,12 @@ func (s *superMux) Roundtrip(req context.Request) (context.Response, error) {
 				log.Debug("path matched")
 				// clean request
 				rcc := RequestToRoundtrip(r)
-				log.Debug("rcc: %+v", rcc)
+				log.Debugf("rcc: %+v", rcc)
 				u := r.Request.URL
 				host := fmt.Sprintf("%s:%s", v.Backend.ServiceName, v.Backend.ServicePort)
 				u.Host = host
 				changeTarget(rcc.Request, u)
-				log.Debug("change target: %+v", rcc.Request)
+				log.Debugf("change target: %+v", rcc.Request)
 				resp, err := roundtripper.RoundTrip(rcc.Request)
 				if err != nil {
 					return nil, err
