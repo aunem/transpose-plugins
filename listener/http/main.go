@@ -86,6 +86,7 @@ func (h *httpListener) LoadSpec(spec interface{}) error {
 	if err != nil {
 		return err
 	}
+	log.Debugf("loaded spec: %+v", Spec)
 	return nil
 }
 
