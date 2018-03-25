@@ -32,6 +32,7 @@ func (h *httpListener) Listen(mw *middleware.Manager, rt *roundtrip.Manager) err
 	handler := http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		// process request
 		log.Debugf("processing request: %+v", req)
+		log.Debug("incomming request uri: %+v", req.URL)
 		rc := context.NewHTTPRequest(req)
 		rcf, err := mw.ExecRequestStack(rc)
 		if err != nil {
