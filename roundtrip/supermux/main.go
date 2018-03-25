@@ -46,7 +46,7 @@ func (s *superMux) Roundtrip(req context.Request) (context.Response, error) {
 				rcc.Request.Host = host
 				// changeTarget(rcc.Request, u)
 				log.Debugf("change target: %+v", rcc.Request)
-				log.Debugf("sending url: %+v", rcc.Request.URL)
+				log.Debugf("sending url: host: %+v scheme: %+v path: %v", rcc.Request.URL.Host, rcc.Request.URL.Scheme, rcc.Request.URL.Path)
 				resp, err := roundtripper.RoundTrip(rcc.Request)
 				if err != nil {
 					return nil, err
