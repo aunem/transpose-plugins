@@ -77,7 +77,6 @@ func (h *httpListener) Listen(mw *middleware.Manager, rt *roundtrip.Manager) err
 
 // LoadSpec implements the listener plugin interface for loading the spec config
 func (h *httpListener) LoadSpec(spec interface{}) error {
-	log.Debug("loading spec...")
 	b, err := yaml.Marshal(spec)
 	if err != nil {
 		return err

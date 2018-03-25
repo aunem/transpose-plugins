@@ -6,6 +6,8 @@ import (
 	"path"
 
 	"github.com/aunem/transpose/pkg/context"
+	log "github.com/sirupsen/logrus"
+	"gopkg.in/yaml.v2"
 )
 
 var roundtripper http.RoundTripper
@@ -56,6 +58,15 @@ func (s *superMux) Roundtrip(req context.Request) (context.Response, error) {
 }
 
 func (s *superMux) LoadSpec(spec interface{}) error {
+	b, err := yaml.Marshal(spec)
+	if err != nil {
+		return err
+	}
+	err = yaml.Unmarshal(b, &Spec)
+	if err != nil {
+		return err
+	}
+	log.Debugf("loaded spec: %+v", Spec)
 	return nil
 }
 
