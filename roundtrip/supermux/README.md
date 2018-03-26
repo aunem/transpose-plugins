@@ -5,7 +5,7 @@ SuperMux is a router plugin that handles HTTP and GRPC transport, it currently s
 ## Use
 
 ```yaml
-apiVersion: alpha.oscea.com/v1
+apiVersion: alpha.aunem.com/v1
 Kind: Transpose
 Metadata:
   name: myProxy
@@ -13,14 +13,14 @@ Metadata:
 spec:
   listener:
     name: mylistener
-    package: github.com/oscea/transpose-plugins/listener/http
+    package: github.com/aunem/transpose-plugins/listener/http
     spec: 
       port: 80
       ssl: false
 
   roundtrip:
     name: myroundtrip
-    package: github.com/oscea/transpose-plugins/roundtrip/supermux
+    package: github.com/aunem/transpose-plugins/roundtrip/supermux
     spec:
       http:
       - path: "/"

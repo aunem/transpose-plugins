@@ -1,0 +1,52 @@
+apiVersion: alpha.aunem.com/v1
+kind: Transpose
+metadata:
+  name: myProxy
+  namespace: default
+spec:
+  debug: true
+
+  listener:
+    name: httplistener
+    package: github.com/aunem/transpose-plugins/listener/http
+    spec: 
+      port: 8080
+      ssl: false
+
+  middleware:
+    request:
+    - name: hydraAuth
+      package: github.com/aunem/transpose-plugins/middleware/hydra
+      spec:
+        endpoint: http://localhost:4444
+        clientID: admin
+        clientSecret: password
+        scopes:
+          - hydra
+          - core
+        resourceMap:
+          - http:
+              method: POST
+              path: "/"
+            action: create
+            resource: "rn:myserver:root"
+    response:
+    - name: hydraAuth
+      package: github.com/aunem/transpose-plugins/middleware/hydra
+      spec:
+        endpoint: http://localhost:4444
+        clientID: admin
+        clientSecret: password
+        scopes:
+          - hydra
+          - core
+
+  roundtrip:
+    name: muxRoundtrip
+    package: github.com/aunem/transpose-plugins/roundtrip/supermux
+    spec:
+      http:
+      - path: "/"
+        backend:
+          serviceName: server
+          servicePort: 80

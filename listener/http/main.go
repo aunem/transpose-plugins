@@ -36,7 +36,7 @@ func (h *httpListener) Listen(mw *middleware.Manager, rt *roundtrip.Manager) err
 		rc := context.NewHTTPRequest(req)
 		rcf, err := mw.ExecRequestStack(rc)
 		if err != nil {
-			http.Error(rw, err.Error(), 500)
+			http.Error(rw, err.Error(), 500) // TODO: better response codes
 			return
 		}
 
