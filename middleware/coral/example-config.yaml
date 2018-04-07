@@ -1,11 +1,3 @@
-
-
-# coral
-
-// Your overview here
-
-## Spec
-```yaml 
 apiVersion: alpha.aunem.com/v1
 Kind: Transpose
 Metadata:
@@ -18,7 +10,7 @@ spec:
     spec: 
       port: 80
       ssl: false
-
+    
   middleware:
     name: coral
     package: github.com/aunem/transpose-plugins/middleware/coral
@@ -34,16 +26,3 @@ spec:
         backend:
           serviceName: myservice
           servicePort: 80
-```
-
-## Contexts Supported
-* Http
-
-## Compatibility
-// your compatibility data goes here
-
-## Dependencies
-// your dependencies go here
-
-## Test
-`go test ./...`

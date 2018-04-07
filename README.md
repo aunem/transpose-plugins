@@ -25,3 +25,8 @@ Plugins are still in progress, heres whats planned to be supported and their sta
 - [ ] Kafka   
 - [ ] Nats   
 - [x] Supermux   
+
+## Contact Us
+
+Chat with us on discord:   
+https://discord.gg/q9mnWtd

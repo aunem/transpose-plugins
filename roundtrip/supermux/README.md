@@ -5,7 +5,7 @@ SuperMux is a router plugin that handles HTTP and GRPC transport, it currently s
 ## Use
 
 ```yaml
-apiVersion: alpha.aunem.com/v1
+apiVersion: alpha.aunem.io/v1
 Kind: Transpose
 Metadata:
   name: myProxy

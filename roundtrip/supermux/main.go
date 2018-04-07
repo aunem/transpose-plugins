@@ -64,7 +64,8 @@ func (s *superMux) Roundtrip(req context.Request) (context.Response, error) {
 	}
 }
 
-func (s *superMux) LoadSpec(spec interface{}) error {
+func (s *superMux) Init(spec interface{}) error {
+	roundtripper = http.DefaultTransport
 	b, err := yaml.Marshal(spec)
 	if err != nil {
 		return err
@@ -74,11 +75,6 @@ func (s *superMux) LoadSpec(spec interface{}) error {
 		return err
 	}
 	log.Debugf("loaded spec: %+v", Spec)
-	return nil
-}
-
-func (s *superMux) Init() error {
-	roundtripper = http.DefaultTransport
 	return nil
 }
 
